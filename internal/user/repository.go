@@ -1,22 +1,32 @@
 package user
 
 import (
+	"errors"
+
+	"github.com/Mariano-JR/auth/internal/db"
+
 	"github.com/google/uuid"
 )
 
-var users = []User{}
+func Login(email, password string) (bool, error) {
+	// for _, u := range users {
+	// 	if u.Email == email && u.Password == password {
+	// 		return true, nil
+	// 	}
+	// }
 
-func Save(Email, Name string) (bool, error) {
-	user := User{
-		ID:    uuid.NewString(),
-		Email: Email,
-		Name:  Name,
-	}
-	users = append(users, user)
-
-	return true, nil
+	return false, errors.New("invalid credentials")
 }
 
-func Users() []User {
-	return users
+func Save(email, name, password string) (bool, error) {
+	user := User{
+		ID:       uuid.NewString(),
+		Email:    email,
+		Name:     name,
+		Password: password,
+	}
+
+	db.DB.Create(&user)
+
+	return true, nil
 }

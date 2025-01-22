@@ -6,14 +6,15 @@ import (
 )
 
 func Setup(app *fiber.App) {
-	app.Static("/", "./static")
+	app.Static("/", "./static/")
+
+	auth := app.Group("/auth")
 
 	//GET
-	app.Get("auth/users", user.GetUsers)
 
 	//POST
-	app.Post("/auth/create", user.CreateUser)
-
+	auth.Post("/login", user.LoginUser)
+	auth.Post("/create", user.CreateUser)
 	//PUT
 
 	//DELETE

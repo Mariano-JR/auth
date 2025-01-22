@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test</title>
+
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+  
+        body {
+          font-family: "Roboto", sans-serif;
+          background-color: #202020;
+          width: 100vw;
+          height: 100vh;
+  
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
+  
+        h1 {
+          color: #fff;
+          font-size: 2rem;
+          margin-bottom: 2rem;
+        }
+  
+        form {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+  
+        label {
+          align-self: flex-start;
+          color: #fff;
+          margin-bottom: 0.5rem;
+        }
+  
+        input {
+          width: 100%;
+          padding: 0.5rem;
+          margin-bottom: 1rem;
+          border: none;
+          border-radius: 5px;
+          width: 25vw;
+          text-align: center;
+        }
+  
+        button {
+          background-color: #ffffff;
+          color: #000000;
+          width: 25vw;
+          padding: 0.5rem 1rem;
+          margin-bottom: 0.5rem;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          -webkit-border-radius: 5px;
+          -moz-border-radius: 5px;
+          -ms-border-radius: 5px;
+          -o-border-radius: 5px;
+        }
+  
+        button:hover {
+          background-color: #c7c7c7;
+        }
+  
+        a {
+          padding: 0.5rem 1rem;
+          color: #fff;
+          text-decoration: none;
+          margin-bottom: 1rem;
+          font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sign Up</h1>
+
+    <form action="/auth/create" method="post" id="login-form" target="_self">
+
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="name">Full Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+
+        <button type="submit" style="width: 90px;">Register</button>
+    </form>
+
+    <form action="/auth/google" method="post" class="auth-form">
+        <button type="submit">
+            Register with Google 
+            <img 
+                src="./assets/img/google-icon-logo-svgrepo-com.svg" 
+                alt="Google logo"
+                style="height: 20px;"
+            >
+        </button>
+    </form>
+    <form action="/auth/github" method="post" class="auth-form">
+        <button type="submit">
+            Register with GitHub
+            <img 
+                src="./assets/img/github-icon-1-logo-svgrepo-com.svg" 
+                alt="Github logo"
+                style="height: 20px;"
+            >
+        </button>
+    </form>
+</body>
+</html>
