@@ -17,14 +17,10 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 
 	if _, err := Login(user.Email, user.Password); err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": err.Error(),
-		})
-	}
+		return c.Redirect("/", fiber.StatusFound)
 
-	return c.JSON(fiber.Map{
-		"message": "Login successful",
-	})
+	}
+	return c.Redirect("/home.html", fiber.StatusFound)
 }
 
 func CreateUser(c *fiber.Ctx) error {
@@ -40,17 +36,9 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	if user.Email == "" || user.Name == "" || user.Password == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Email, Name and Password are required",
-		})
-	}
-
 	if _, err := Save(user.Email, user.Name, user.Password); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": err.Error(),
-		})
+		return c.Redirect("/signup.html", fiber.StatusFound)
 	}
 
-	return nil
+	return c.Redirect("/", fiber.StatusFound)
 }

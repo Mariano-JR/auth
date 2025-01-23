@@ -14,7 +14,7 @@ func Setup(app *fiber.App) {
 
 	//POST
 	auth.Post("/login", user.LoginUser)
-	auth.Post("/create", user.CreateUser)
+	auth.Post("/register", user.CreateUser)
 	//PUT
 
 	//DELETE

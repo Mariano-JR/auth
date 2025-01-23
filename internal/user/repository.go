@@ -9,11 +9,11 @@ import (
 )
 
 func Login(email, password string) (bool, error) {
-	// for _, u := range users {
-	// 	if u.Email == email && u.Password == password {
-	// 		return true, nil
-	// 	}
-	// }
+	var user = db.DB.Where("email = ? AND password = ?", email, password).First(&User{})
+
+	if user.Error == nil {
+		return true, nil
+	}
 
 	return false, errors.New("invalid credentials")
 }
