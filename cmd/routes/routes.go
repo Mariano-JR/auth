@@ -2,6 +2,8 @@ package routes
 
 import (
 	"github.com/Mariano-JR/auth/internal/user"
+	"github.com/Mariano-JR/auth/middlewares"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,8 +16,9 @@ func Setup(app *fiber.App) {
 
 	//POST
 	auth.Post("/login", user.LoginUser)
-	auth.Post("/register", user.CreateUser)
+	auth.Post("/register", middlewares.ValidateMiddleware(user.User{}), user.CreateUser)
 	//PUT
 
 	//DELETE
+	auth.Delete("/delete", user.DeleteUser)
 }

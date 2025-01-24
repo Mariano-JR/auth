@@ -29,9 +29,49 @@
         font-size: 2rem;
         margin-bottom: 2rem;
       }
+
+      button {
+        background-color: #ff6868;
+        color: #ffffff;
+        width: 25vw;
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.5rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        -ms-border-radius: 5px;
+        -o-border-radius: 5px;
+      }
+
+      button:hover {
+        background-color: #d85757;
+      }
     </style>
   </head>
   <body>
     <h1>Bem Vindo !!!</h1>
-  </body>
+    
+    <button id="delete-user">Deletar Usuário</button>
+
+    <script>
+        const deleteButton = document.getElementById("delete-user");
+
+        deleteButton.addEventListener("click", async () => {
+            const confirmed = confirm("Tem certeza de que deseja deletar este usuário?");
+            if (confirmed) {
+                try {
+                    const response = await fetch("/auth/delete", {
+                        method: "DELETE",
+                    });
+
+                    window.location.href = "/";
+                } catch (error) {
+                    console.error("Erro:", error);
+                    alert("Erro ao conectar com o servidor.");
+                }
+            }
+        });
+    </script>
 </html>
