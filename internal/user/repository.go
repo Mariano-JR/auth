@@ -1,6 +1,8 @@
 package user
 
 import (
+	"errors"
+
 	"github.com/Mariano-JR/auth/internal/db"
 
 	"github.com/google/uuid"
@@ -19,13 +21,13 @@ func GetUser(email string) (*User, error) {
 }
 
 func Login(email, password string) (bool, error) {
-	user, err := GetUser(email)
-
-	if err == nil && user.Password == password {
+	if user, err := GetUser(email); err != nil {
+		return false, err
+	} else if user.Password == password {
 		return true, nil
 	}
 
-	return false, err
+	return false, errors.New("credentials invalids")
 }
 
 func Save(email, name, password string) (bool, error) {
@@ -36,7 +38,9 @@ func Save(email, name, password string) (bool, error) {
 		Password: password,
 	}
 
-	db.DB.Create(&user)
+	if err := db.DB.Create(&user).Error; err != nil {
+		return false, err
+	}
 
 	return true, nil
 }

@@ -14,11 +14,11 @@ func Setup(app *fiber.App) {
 	authGroup := app.Group("/auth")
 
 	//GET
-	authGroup.Get("/google", auth.Google)
-	authGroup.Get("/google/callback", auth.Callback)
+	authGroup.Get("/google", auth.GoogleLogin)
+	authGroup.Get("/google/callback", auth.GoogleCallback)
 
 	//POST
-	authGroup.Post("/login", user.LoginUser)
+	authGroup.Post("/login", middlewares.CookiesMiddleware, user.LoginUser)
 	authGroup.Post("/register", middlewares.ValidateMiddleware(user.User{}), user.CreateUser)
 	//PUT
 

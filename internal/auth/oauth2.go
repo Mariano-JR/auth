@@ -1,14 +1,16 @@
 package auth
 
 import (
-	"context"
 	"encoding/json"
 	"io"
-	"net/http"
 	"os"
+
+	"github.com/Mariano-JR/auth/internal/user"
+	"github.com/gofiber/fiber/v2"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"gorm.io/gorm"
 )
 
 var (
@@ -26,50 +28,72 @@ var (
 	OAuthStateString = "random_string"
 )
 
-func GoogleLogin(w http.ResponseWriter, r *http.Request) {
-	url := GoogleOAuthConfig.AuthCodeURL(OAuthStateString, oauth2.AccessTypeOffline)
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+func GoogleLogin(c *fiber.Ctx) error {
+	c.Redirect(GoogleOAuthConfig.AuthCodeURL(OAuthStateString))
+	return nil
 }
 
-func GoogleCallback(w http.ResponseWriter, r *http.Request) {
-	state := r.URL.Query().Get("state")
-	if state != OAuthStateString {
-		http.Error(w, "Invalid OAuth state", http.StatusBadRequest)
-		return
+func GoogleCallback(c *fiber.Ctx) error {
+	if c.Query("state") != OAuthStateString {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid OAuth state")
 	}
 
-	code := r.URL.Query().Get("code")
-	if code == "" {
-		http.Error(w, "Code not found", http.StatusBadRequest)
-		return
-	}
-
-	token, err := GoogleOAuthConfig.Exchange(context.Background(), code)
+	code := c.Query("code")
+	token, err := GoogleOAuthConfig.Exchange(c.Context(), code)
 	if err != nil {
-		http.Error(w, "Failed to exchange token: "+err.Error(), http.StatusInternalServerError)
-		return
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to exchange token: " + err.Error())
 	}
 
-	client := GoogleOAuthConfig.Client(context.Background(), token)
+	client := GoogleOAuthConfig.Client(c.Context(), token)
 	userInfo, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
 	if err != nil {
-		http.Error(w, "Failed to get user info: "+err.Error(), http.StatusInternalServerError)
-		return
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to get user info: " + err.Error())
 	}
 
 	body, err := io.ReadAll(userInfo.Body)
 	if err != nil {
-		http.Error(w, "Failed to read user info: "+err.Error(), http.StatusInternalServerError)
-		return
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to read user info: " + err.Error())
 	}
 
-	var user GoogleUser
-	if err := json.Unmarshal(body, &user); err != nil {
-		http.Error(w, "Failed to unmarshal user info: "+err.Error(), http.StatusInternalServerError)
-		return
+	var googleUser GoogleUser
+	if err := json.Unmarshal(body, &googleUser); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to unmarshal user info: " + err.Error())
 	}
 
-	defer userInfo.Body.Close()
+	_, err = user.GetUser(googleUser.Email)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			newUser := user.User{
+				Email: googleUser.Email,
+				Name:  googleUser.Name,
+			}
 
-	http.Redirect(w, r, "/home.html", http.StatusFound)
+			if _, err := user.Save(newUser.Email, newUser.Name, ""); err != nil {
+				return c.Status(fiber.StatusInternalServerError).SendString("Failed to save user: " + err.Error())
+			}
+		} else {
+			return c.Status(fiber.StatusInternalServerError).SendString("Database error: " + err.Error())
+		}
+	}
+
+	u, _ := user.GetUser(googleUser.Email)
+
+	c.Cookie(&fiber.Cookie{
+		Name:  "user_id",
+		Value: u.ID,
+		Path:  "/",
+	})
+	c.Cookie(&fiber.Cookie{
+		Name:  "user_email",
+		Value: u.Email,
+		Path:  "/",
+	})
+	c.Cookie(&fiber.Cookie{
+		Name:  "user_name",
+		Value: u.Name,
+		Path:  "/",
+	})
+
+	c.Redirect("/home.html")
+	return nil
 }
