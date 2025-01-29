@@ -32,6 +32,7 @@ This project is a back-end implementation of a secure and scalable authenticatio
 ├── static/             # Static HTML files for testing
 │   └── index.html      # Simple front-end for authentication
 ├── migrations/         # Database migration files (optional)
+├── middlewares/        # Routes Middlewares functions
 ├── scripts/            # Automation and helper scripts
 ├── docs/               # Documentation and API specs
 ├── go.mod              # Go module dependencies
@@ -43,7 +44,7 @@ This project is a back-end implementation of a secure and scalable authenticatio
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/auth.git
+   git clone https://github.com/Mariano-JR/auth.git
    cd auth
    ```
 
@@ -56,6 +57,7 @@ This project is a back-end implementation of a secure and scalable authenticatio
    Create a `.env` file in the root directory and add the required variables:
    ```env
    PORT=3000
+   DATABASE_URL=your-connection-string
    GOOGLE_CLIENT_ID=your-google-client-id
    GOOGLE_CLIENT_SECRET=your-google-client-secret
    GITHUB_CLIENT_ID=your-github-client-id
@@ -74,7 +76,7 @@ This project is a back-end implementation of a secure and scalable authenticatio
 
 - Navigate to the home page to access the login buttons for Google and GitHub.
 - The `/auth/:provider` route redirects users to the respective OAuth provider.
-- The `/auth/callback` route handles the provider's response and validates the token.
+- The `/auth/:provider/callback` route handles the provider's response and validates the token.
 
 ## Future Improvements
 
